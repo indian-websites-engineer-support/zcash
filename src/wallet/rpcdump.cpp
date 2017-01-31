@@ -553,19 +553,22 @@ Value z_importkey(const Array& params, bool fHelp)
     if (!EnsureWalletIsAvailable(fHelp))
         return Value::null;
 
-    if (fHelp || params.size() < 1 || params.size() > 2)
+    if (fHelp || params.size() < 1 || params.size() > 3)
         throw runtime_error(
-            "z_importkey \"zkey\" ( rescan )\n"
+            "z_importkey \"zkey\" ( rescan startHeight )\n"
             "\nAdds a zkey (as returned by z_exportkey) to your wallet.\n"
             "\nArguments:\n"
             "1. \"zkey\"             (string, required) The zkey (see z_exportkey)\n"
             "2. rescan             (boolean, optional, default=true) Rescan the wallet for transactions\n"
+            "3. startHeight        (numeric, optional, default=0) Block height to start rescan from\n"
             "\nNote: This call can take minutes to complete if rescan is true.\n"
             "\nExamples:\n"
             "\nExport a zkey\n"
             + HelpExampleCli("z_exportkey", "\"myaddress\"") +
             "\nImport the zkey with rescan\n"
             + HelpExampleCli("z_importkey", "\"mykey\"") +
+            "\nImport the zkey with partial rescan\n"
+            + HelpExampleCli("z_importkey", "\"mykey\", true, 30000") +
             "\nAs a JSON-RPC call\n"
             + HelpExampleRpc("z_importkey", "\"mykey\", false")
         );
@@ -578,6 +581,11 @@ Value z_importkey(const Array& params, bool fHelp)
     bool fRescan = true;
     if (params.size() > 1)
         fRescan = params[1].get_bool();
+
+    // Height to rescan from
+    int nRescanHeight = 0;
+    if (params.size() > 2)
+        nRescanHeight = params[2].get_int();
 
     string strSecret = params[0].get_str();
     CZCSpendingKey spendingkey(strSecret);
@@ -601,7 +609,7 @@ Value z_importkey(const Array& params, bool fHelp)
 
         // We want to scan for transactions and notes
         if (fRescan) {
-            pwalletMain->ScanForWalletTransactions(chainActive.Genesis(), true);
+            pwalletMain->ScanForWalletTransactions(chainActive[nRescanHeight], true);
         }
     }
 
