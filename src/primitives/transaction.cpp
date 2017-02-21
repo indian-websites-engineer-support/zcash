@@ -20,7 +20,7 @@ JSDescription::JSDescription(ZCJoinSplit& params,
 {
     boost::array<libzcash::Note, ZC_NUM_JS_OUTPUTS> notes;
 
-    auto witness = params.witness(
+    witness = params.witness(
         inputs,
         outputs,
         notes,

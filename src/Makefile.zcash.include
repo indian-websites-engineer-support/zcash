@@ -2,6 +2,34 @@ noinst_PROGRAMS += \
   zcash/GenerateParams \
   zcash/CreateJoinSplit
 
+if BUILD_ZCASH_PROVING_SERVICE
+noinst_PROGRAMS += \
+  zcash-proving-service \
+  zcash/ExampleProvingServiceClient
+
+# proving service daemon
+zcash_proving_service_SOURCES = zcash-proving-service.cpp
+zcash_proving_service_LDADD = \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBZCASH) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(BOOST_LIBS) \
+  $(ZMQ_LIBS) \
+  $(LIBZCASH_LIBS)
+
+# example client for proving service
+zcash_ExampleProvingServiceClient_SOURCES = zcash/ExampleProvingServiceClient.cpp
+zcash_ExampleProvingServiceClient_LDADD = \
+  $(LIBBITCOIN_COMMON) \
+  $(LIBZCASH) \
+  $(LIBBITCOIN_UTIL) \
+  $(LIBBITCOIN_CRYPTO) \
+  $(BOOST_LIBS) \
+  $(ZMQ_LIBS) \
+  $(LIBZCASH_LIBS)
+endif
+
 # tool for generating our public parameters
 zcash_GenerateParams_SOURCES = zcash/GenerateParams.cpp
 zcash_GenerateParams_LDADD = \

@@ -5,6 +5,7 @@ src/bitcoin
 src/zcashd
 src/zcash-cli
 src/zcash-gtest
+src/zcash-proving-service
 src/zcash-tx
 src/test/test_bitcoin
 src/qt/test/test_bitcoin-qt
@@ -12,6 +13,7 @@ src/qt/test/test_bitcoin-qt
 # Zcash utilities
 src/zcash/GenerateParams
 src/zcash/CreateJoinSplit
+src/zcash/ExampleProvingServiceClient
 
 *zcashTest.pk
 *zcashTest.vk

@@ -207,6 +207,12 @@ AC_ARG_WITH([daemon],
   [build_bitcoind=$withval],
   [build_bitcoind=yes])
 
+AC_ARG_WITH([proving-service],
+  [AS_HELP_STRING([--with-proving-service],
+  [build zcash-proving-service (default is no)])],
+  [build_zcash_proving_service=$withval],
+  [build_zcash_proving_service=no])
+
 AC_LANG_PUSH([C++])
 
 use_pkgconfig=yes
@@ -803,6 +809,20 @@ if test x$build_bitcoin_libs = xyes; then
 fi
 
 AC_MSG_RESULT($build_bitcoin_libs)
+
+AC_MSG_CHECKING([whether to build zcash-proving-service])
+if test x$build_zcash_proving_service = xyes; then
+  if test "x$use_zmq" = "xyes"; then
+    AC_MSG_RESULT([yes])
+    BUILD_ZCASH_PROVING_SERVICE="yes"
+  else
+    AC_MSG_ERROR([zcash-proving-service requires ZMQ.]);
+  fi
+else
+  AC_MSG_RESULT([no])
+  BUILD_ZCASH_PROVING_SERVICE=""
+fi
+AM_CONDITIONAL([BUILD_ZCASH_PROVING_SERVICE], [test x$BUILD_ZCASH_PROVING_SERVICE = xyes])
 
 AC_LANG_POP
 
