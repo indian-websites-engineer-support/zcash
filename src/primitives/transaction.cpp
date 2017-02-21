@@ -20,10 +20,7 @@ JSDescription::JSDescription(ZCJoinSplit& params,
 {
     boost::array<libzcash::Note, ZC_NUM_JS_OUTPUTS> notes;
 
-    if (computeProof) {
-        params.loadProvingKey();
-    }
-    proof = params.prove(
+    auto witness = params.witness(
         inputs,
         outputs,
         notes,
@@ -36,9 +33,12 @@ JSDescription::JSDescription(ZCJoinSplit& params,
         commitments,
         vpub_old,
         vpub_new,
-        anchor,
-        computeProof
+        anchor
     );
+    if (computeProof) {
+        params.loadProvingKey();
+        proof = params.prove(witness);
+    }
 }
 
 JSDescription JSDescription::Randomized(

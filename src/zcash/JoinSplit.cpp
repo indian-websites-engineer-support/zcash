@@ -184,7 +184,7 @@ public:
         }
     }
 
-    ZCProof prove(
+    JSProofWitness<NumInputs, NumOutputs> witness(
         const boost::array<JSInput, NumInputs>& inputs,
         const boost::array<JSOutput, NumOutputs>& outputs,
         boost::array<Note, NumOutputs>& out_notes,
@@ -197,13 +197,8 @@ public:
         boost::array<uint256, NumOutputs>& out_commitments,
         uint64_t vpub_old,
         uint64_t vpub_new,
-        const uint256& rt,
-        bool computeProof
+        const uint256& rt
     ) {
-        if (computeProof && !pk) {
-            throw std::runtime_error("JoinSplit proving key not loaded");
-        }
-
         if (vpub_old > MAX_MONEY) {
             throw std::invalid_argument("nonsensical vpub_old value");
         }
@@ -312,8 +307,13 @@ public:
             out_macs[i] = PRF_pk(inputs[i].key, i, h_sig);
         }
 
-        if (!computeProof) {
-            return ZCProof();
+        return JSProofWitness<NumInputs, NumOutputs>(
+            phi, rt, h_sig, inputs, out_notes, vpub_old, vpub_new);
+    }
+
+    ZCProof prove(const JSProofWitness<NumInputs, NumOutputs>& witness) {
+        if (!pk) {
+            throw std::runtime_error("JoinSplit proving key not loaded");
         }
 
         protoboard<FieldT> pb;
@@ -321,13 +321,13 @@ public:
             joinsplit_gadget<FieldT, NumInputs, NumOutputs> g(pb);
             g.generate_r1cs_constraints();
             g.generate_r1cs_witness(
-                phi,
-                rt,
-                h_sig,
-                inputs,
-                out_notes,
-                vpub_old,
-                vpub_new
+                witness.phi,
+                witness.rt,
+                witness.h_sig,
+                witness.inputs,
+                witness.outputs,
+                witness.vpub_old,
+                witness.vpub_new
             );
         }
 

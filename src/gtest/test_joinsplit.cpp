@@ -52,7 +52,7 @@ void test_full_api(ZCJoinSplit* js)
         boost::array<Note, 2> output_notes;
 
         // Perform the proof
-        proof = js->prove(
+        proof = js->prove(js->witness(
             inputs,
             outputs,
             output_notes,
@@ -66,7 +66,7 @@ void test_full_api(ZCJoinSplit* js)
             vpub_old,
             vpub_new,
             rt
-        );
+        ));
     }
 
     // Verify the transaction:
@@ -127,7 +127,7 @@ void test_full_api(ZCJoinSplit* js)
         boost::array<Note, 2> output_notes;
 
         // Perform the proof
-        proof = js->prove(
+        proof = js->prove(js->witness(
             inputs,
             outputs,
             output_notes,
@@ -141,7 +141,7 @@ void test_full_api(ZCJoinSplit* js)
             vpub_old,
             vpub_new,
             rt
-        );
+        ));
     }
 
     // Verify the transaction:
@@ -179,7 +179,7 @@ void invokeAPI(
 
     boost::array<Note, 2> output_notes;
 
-    ZCProof proof = js->prove(
+    auto witness = js->witness(
         inputs,
         outputs,
         output_notes,
@@ -192,8 +192,7 @@ void invokeAPI(
         commitments,
         vpub_old,
         vpub_new,
-        rt,
-        false
+        rt
     );
 }
 
