@@ -142,6 +142,18 @@ bool CWalletDB::WriteZKey(const libzcash::PaymentAddress& addr, const libzcash::
     return Write(std::make_pair(std::string("zkey"), addr), key, false);
 }
 
+bool CWalletDB::WriteViewingKey(const libzcash::ViewingKey &vk)
+{
+    nWalletDBUpdated++;
+    return Write(std::make_pair(std::string("vkey"), vk), '1');
+}
+
+bool CWalletDB::EraseViewingKey(const libzcash::ViewingKey &vk)
+{
+    nWalletDBUpdated++;
+    return Erase(std::make_pair(std::string("vkey"), vk));
+}
+
 bool CWalletDB::WriteCScript(const uint160& hash, const CScript& redeemScript)
 {
     nWalletDBUpdated++;
@@ -468,6 +480,19 @@ ReadKeyValue(CWallet* pwallet, CDataStream& ssKey, CDataStream& ssValue,
                 pwallet->LoadWatchOnly(script);
 
             // Watch-only addresses have no birthday information for now,
+            // so set the wallet birthday to the beginning of time.
+            pwallet->nTimeFirstKey = 1;
+        }
+        else if (strType == "vkey")
+        {
+            libzcash::ViewingKey vk;
+            ssValue >> vk;
+            char fYes;
+            ssValue >> fYes;
+            if (fYes == '1')
+                pwallet->LoadViewingKey(vk);
+
+            // Viewing keys have no birthday information for now,
             // so set the wallet birthday to the beginning of time.
             pwallet->nTimeFirstKey = 1;
         }
