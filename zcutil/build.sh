@@ -25,6 +25,11 @@ if [[ -z "${CXX-}" ]]; then
     CXX=g++
 fi
 
+# Allow users to set arbitary compile flags. Most users will not need this.
+if [[ -z "${CONFIGURE_FLAGS-}" ]]; then
+    CONFIGURE_FLAGS=""
+fi
+
 if [ "x$*" = 'x--help' ]
 then
     cat <<EOF
@@ -77,5 +82,5 @@ PREFIX="$(pwd)/depends/$BUILD/"
 
 HOST="$HOST" BUILD="$BUILD" "$MAKE" "$@" -C ./depends/ V=1 NO_QT=1
 ./autogen.sh
-CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" --with-gui=no "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
+CC="$CC" CXX="$CXX" ./configure --prefix="${PREFIX}" --host="$HOST" --build="$BUILD" --with-gui=no "$HARDENING_ARG" "$LCOV_ARG" "$TEST_ARG" "$MINING_ARG" "$CONFIGURE_FLAGS" CXXFLAGS='-fwrapv -fno-strict-aliasing -Werror -g'
 "$MAKE" "$@" V=1
